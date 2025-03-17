@@ -23,9 +23,7 @@ const config = {
 		// No base path needed for custom domain
 		paths: {
 			base: ''
-		},
-		// Add trailingSlash configuration to ensure consistent URLs
-		trailingSlash: 'never'
+		}
 	}
 };
 
