@@ -16,14 +16,16 @@ const config = {
 			// these options are set automatically — see below
 			pages: 'build',
 			assets: 'build',
-			fallback: undefined,
+			fallback: 'index.html',
 			precompress: false,
 			strict: true
 		}),
+		// No base path needed for custom domain
 		paths: {
-			base: process.env.NODE_ENV === 'production' ? '/chadjayholmes-com' : '',
-			relative: false
-		}
+			base: ''
+		},
+		// Add trailingSlash configuration to ensure consistent URLs
+		trailingSlash: 'never'
 	}
 };
 
