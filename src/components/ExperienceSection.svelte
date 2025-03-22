@@ -1,7 +1,8 @@
 <script lang="ts">
-  import { fade } from 'svelte/transition';
-
-  // Define types for the experience data
+  import { onMount } from 'svelte';
+  
+  export let experiences = [];
+  
   interface Role {
     title: string;
     period: string;
@@ -12,145 +13,87 @@
   interface Experience {
     company: string;
     roles: Role[];
-    manager?: {
-      name: string;
-      email?: string;
-      phone?: string;
-    };
   }
-
-  // Default experiences data
-  export let experiences: Experience[] = [
-    {
-      company: "Pattern Inc.",
-      roles: [
-        {
-          title: "Senior Software Engineer",
-          period: "11/2024 - Present",
-          highlights: [],
-          technologies: ["Ruby", "TypeScript", "AWS", "Terraform"]
-        },
-        {
-          title: "Software Engineer II",
-          period: "04/2023 - 11/2024",
-          highlights: [
-            "Led a team of 4 engineers in designing and delivering a green-field product",
-            "Developed highly available backend services in Ruby and TypeScript",
-            "Architected high-throughput event-based data processing pipeline",
-            "Designed and delivered prototype API connector for SaaS project"
-          ],
-          technologies: ["Ruby", "TypeScript", "AWS Lambda", "Event Processing"]
-        },
-        {
-          title: "Software Engineer",
-          period: "04/2022 - 04/2023",
-          highlights: [
-            "Led work-stream for central async job processing system",
-            "Developed custom Lambda caching client package for private NPM registry",
-            "Reduced MTM auth speeds from >1000ms to < 10ms through custom authorizer",
-            "Deployed production AWS infrastructure using Terraform and Github Actions"
-          ],
-          technologies: ["AWS", "Terraform", "Node.js", "CI/CD"]
-        }
-      ]
-    },
-    {
-      company: "Ultimate Kronos Group",
-      roles: [
-        {
-          title: "Product Support Specialist II",
-          period: "09/2021 - 04/2022",
-          highlights: [
-            "Resolved complex customer product issues via multiple channels",
-            "Documented issues using Jira and Salesforce for development teams",
-            "Developed SQL scripts for efficient troubleshooting processes",
-            "Provided HRMS software consultation to industry professionals"
-          ],
-          technologies: ["SQL", "Jira", "Salesforce", "HRMS"]
-        }
-      ]
-    },
-    {
-      company: "Instructure Inc.",
-      roles: [
-        {
-          title: "Technical Support Engineer",
-          period: "07/2020 - 09/2021",
-          highlights: [
-            "Managed 100+ weekly support cases with 95% CSAT score",
-            "Achieved 90% first-contact resolution rate",
-            "Ranked in top 12% of department performers (Q2 2021)",
-            "Utilized API documentation for advanced troubleshooting"
-          ],
-          technologies: ["API Integration", "Technical Support", "Problem Resolution"]
-        }
-      ]
-    }
-  ];
-
-  // Track active company for UI state
-  export let activeCompany = experiences.length > 0 ? experiences[0].company : '';
-
-  export let showAllExperiences = false;
-  export let sectionTitle = "Experience";
-
+  
+  if (experiences.length === 0) {
+    experiences = [
+      {
+        company: "Example Company",
+        roles: [
+          {
+            title: "Senior Developer",
+            period: "2022 - Present",
+            highlights: [
+              "Implemented key features that increased user engagement by 40%",
+              "Led team of 5 developers on mission-critical projects"
+            ]
+          },
+          {
+            title: "Developer",
+            period: "2020 - 2022",
+            highlights: [
+              "Rebuilt legacy codebase to modern standards",
+              "Developed CI/CD pipeline that reduced deployment time by 60%"
+            ]
+          }
+        ]
+      }
+    ];
+  }
+  
+  let activeCompany = experiences[0].company;
+  let activeExperience = experiences[0];
+  
   function setActiveCompany(company: string) {
     activeCompany = company;
+    activeExperience = experiences.find(exp => exp.company === company) || experiences[0];
   }
+  
+  onMount(() => {
+    activeExperience = experiences.find(exp => exp.company === activeCompany) || experiences[0];
+  });
 </script>
 
-<section class="experience-section">
+<section id="experience" class="section experience-section">
   <div class="section-container">
-    <h1 class="section-title">{sectionTitle}</h1>
-    
+    <h2 class="section-title">Experience</h2>
     <div class="experience-content">
-      <!-- Company selector tabs -->
-      <div class="company-tabs">
-        {#each experiences as exp}
+      <div class="companies-list">
+        {#each experiences as experience}
           <button 
-            class="tab-button" 
-            class:active={activeCompany === exp.company}
-            on:click={() => setActiveCompany(exp.company)}
+            class="company-button {activeCompany === experience.company ? 'active' : ''}"
+            on:click={() => setActiveCompany(experience.company)}
           >
-            {exp.company}
+            <h3 class="company-name">{experience.company}</h3>
           </button>
         {/each}
       </div>
       
-      <!-- Experience details -->
-      <div class="experience-details">
-        {#each experiences as exp}
-          {#if activeCompany === exp.company}
-            <div class="company-section" transition:fade={{ duration: 200 }}>
-              <div class="company-info">
-                <h3 class="company-name">{exp.company}</h3>
+      <div class="roles-container">
+        {#if activeExperience}
+          {#each activeExperience.roles as role}
+            <div class="role-card">
+              <div class="role-header">
+                <h3 class="role-title">{role.title}</h3>
+                <span class="role-period">{role.period}</span>
               </div>
-              
-              {#each exp.roles as role}
-                <div class="role">
-                  <div class="role-header">
-                    <h4 class="role-title">{role.title}</h4>
-                    <span class="role-period">{role.period}</span>
-                  </div>
-                  
-                  <ul class="highlights-list">
-                    {#each role.highlights as highlight}
-                      <li>{highlight}</li>
+              <div class="role-content">
+                <ul class="highlights-list">
+                  {#each role.highlights as highlight}
+                    <li class="role-highlight">{highlight}</li>
+                  {/each}
+                </ul>
+                {#if role.technologies && role.technologies.length > 0}
+                  <div class="tech-tags">
+                    {#each role.technologies as tech}
+                      <span class="tech-tag">{tech}</span>
                     {/each}
-                  </ul>
-                  
-                  {#if role.technologies && role.technologies.length > 0}
-                    <div class="tech-tags">
-                      {#each role.technologies as tech}
-                        <span class="tech-tag">{tech}</span>
-                      {/each}
-                    </div>
-                  {/if}
-                </div>
-              {/each}
+                  </div>
+                {/if}
+              </div>
             </div>
-          {/if}
-        {/each}
+          {/each}
+        {/if}
       </div>
     </div>
   </div>
@@ -158,11 +101,10 @@
 
 <style>
   .experience-section {
-    padding: 0 0 5rem;
-    width: 100%;
-    position: relative;
-    z-index: 10;
-    font-size: 0.8em;
+    min-height: 100vh;
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    padding: 5rem 0;
   }
   
   .section-container {
@@ -170,20 +112,17 @@
     margin: 0 auto;
     padding: 0 clamp(1rem, 3vw, 2rem);
     width: 100%;
-    position: relative;
-    margin-top: 0;
   }
   
   .section-title {
     font-size: clamp(1.8rem, 6.5vw, 5.5rem);
+    color: var(--text-primary);
+    margin: 0 0 3rem;
+    text-align: left;
     font-weight: 700;
     font-family: 'Inter', sans-serif;
     line-height: 1;
     letter-spacing: -0.02em;
-    color: var(--text-primary);
-    position: relative;
-    text-align: left;
-    margin: 0 0 2rem;
     text-shadow: 
       0 0 1px rgba(255, 255, 255, 0.2),
       0 0 15px var(--text-glow),
@@ -193,162 +132,192 @@
   }
   
   .experience-content {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 3fr;
     gap: 2rem;
-    padding-top: 5rem;
+    align-items: flex-start;
   }
   
-  .company-tabs {
+  .companies-list {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
-    min-width: 180px;
-    position: relative;
+    gap: 0.5rem;
+    position: sticky;
+    top: 7rem;
   }
   
-  .tab-button {
-    background: none;
+  .company-button {
+    background: transparent;
     border: none;
+    padding: 1rem;
     text-align: left;
-    padding: 0.75rem 1rem;
-    color: var(--text-secondary);
     cursor: pointer;
-    border-left: 2px solid rgba(125, 211, 252, 0.1);
-    transition: all 0.2s ease;
-    font-family: inherit;
-    font-size: 0.75rem;
+    border-left: 3px solid rgba(125, 211, 252, 0.2);
+    transition: all 0.3s ease;
+    outline: none;
+    color: var(--text-secondary);
   }
   
-  .tab-button:hover {
-    background: rgba(125, 211, 252, 0.05);
+  .company-button:hover {
+    border-left-color: rgba(125, 211, 252, 0.5);
     color: var(--text-accent);
   }
   
-  .tab-button.active {
-    color: var(--text-accent);
-    border-left: 2px solid var(--text-accent);
+  .company-button.active {
+    border-left-color: var(--text-accent);
+    color: var(--text-primary);
     background: rgba(125, 211, 252, 0.05);
-  }
-  
-  .experience-details {
-    position: relative;
-    flex: 1;
-    min-height: 750px;
-  }
-  
-  .company-section {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
   }
   
   .company-name {
-    font-size: 1.15rem;
-    color: var(--text-primary);
-    margin: 0 0 1.5rem;
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
   
-  .role {
-    margin-bottom: 2rem;
+  .roles-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .role-card {
     padding: 1.5rem;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    border: 1px solid rgba(125, 211, 252, 0.2);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: rgba(125, 211, 252, 0.05);
+    border: 1px solid rgba(125, 211, 252, 0.1);
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
   }
   
-  .role:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  .role-card:hover {
+    border-color: rgba(125, 211, 252, 0.2);
+    box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.3);
+    transform: translateY(-5px);
   }
   
   .role-header {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: center;
     margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
   }
   
-  .role-header h4 {
-    font-size: 1rem;
-    font-weight: 600;
+  .role-title {
+    margin: 0;
+    font-size: 1.5rem;
     color: var(--text-accent);
-    margin: 0 0 0.5rem;
+    letter-spacing: -0.01em;
   }
   
-  .role-header .period {
-    font-size: 0.7rem;
+  .role-period {
+    font-size: 0.9rem;
     color: var(--text-secondary);
-    margin: 0 0 1rem;
+    background: rgba(125, 211, 252, 0.1);
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.25rem;
+    white-space: nowrap;
   }
   
   .highlights-list {
-    list-style-type: disc;
-    padding-left: 1.25rem;
-    margin: 0.5rem 0 1.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem;
   }
   
-  .highlights-list li {
+  .role-highlight {
+    position: relative;
+    padding-left: 1.5rem;
     margin-bottom: 0.75rem;
-    color: var(--text-primary);
-    line-height: 1.45;
-    font-size: 0.75rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+  
+  .role-highlight::before {
+    content: '▹';
+    position: absolute;
+    left: 0;
+    color: var(--text-accent);
   }
   
   .tech-tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-top: 1.5rem;
   }
   
   .tech-tag {
-    font-size: 0.6rem;
-    background: rgba(125, 211, 252, 0.08);
-    color: var(--text-accent);
+    font-size: 0.8rem;
     padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    border: 1px solid rgba(125, 211, 252, 0.2);
+    background: rgba(125, 211, 252, 0.1);
+    color: var(--text-secondary);
+    border-radius: 0.25rem;
+    white-space: nowrap;
   }
   
-  /* Responsive styles */
   @media (max-width: 768px) {
     .experience-content {
-      flex-direction: column;
+      grid-template-columns: 1fr;
+      gap: 1rem;
     }
     
-    .company-tabs {
+    .companies-list {
       flex-direction: row;
       overflow-x: auto;
-      white-space: nowrap;
       padding-bottom: 0.5rem;
-      min-width: auto;
+      position: relative;
+      top: 0;
+      scrollbar-width: thin;
     }
     
-    .tab-button {
+    .company-button {
       border-left: none;
-      border-bottom: 2px solid rgba(125, 211, 252, 0.1);
+      border-bottom: 3px solid rgba(125, 211, 252, 0.2);
+      white-space: nowrap;
+      padding: 0.5rem 1rem;
     }
     
-    .tab-button.active {
-      border-left: none;
-      border-bottom: 2px solid var(--text-accent);
+    .company-button:hover,
+    .company-button.active {
+      border-left-color: transparent;
+      border-bottom-color: var(--text-accent);
     }
     
-    .experience-details {
-      min-height: 500px;
+    .role-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    
+    .role-period {
+      align-self: flex-start;
+    }
+    
+    .role-card {
+      padding: 1.25rem;
     }
   }
   
   @media (max-width: 480px) {
-    .role-header {
-      flex-direction: column;
-      gap: 0.5rem;
+    .section-title {
+      margin-bottom: 2rem;
     }
     
-    .experience-section {
-      padding: 3rem 0;
+    .company-name {
+      font-size: 1rem;
+    }
+    
+    .role-title {
+      font-size: 1.3rem;
+    }
+    
+    .role-highlight {
+      font-size: 0.9rem;
+    }
+    
+    .tech-tag {
+      font-size: 0.7rem;
     }
   }
 </style> 

@@ -5,6 +5,7 @@
   import { onMount } from 'svelte';
   import { navigating } from '$app/stores';
   import { fade } from 'svelte/transition';
+  import { goto } from '$app/navigation';
 
   let visible = false;
   let prevScrollPos = 0;
@@ -20,20 +21,16 @@
     mobileMenuOpen = false;
     const section = document.getElementById(sectionId);
     if (section) {
-      // Get navbar height to use as offset
       const navbar = document.querySelector('.navbar');
       const navbarHeight = navbar ? navbar.getBoundingClientRect().height : 0;
       
-      // Calculate the element's position relative to the top of the page
       const sectionPosition = section.getBoundingClientRect().top + window.scrollY;
       
-      // Add additional offset for the experience section
-      let additionalOffset = 20; // Default extra padding
+      let additionalOffset = 20;
       if (sectionId === 'experience') {
-        additionalOffset = 20; // Extra offset for experience section
+        additionalOffset = 20;
       }
       
-      // Scroll to element with offset for navbar
       window.scrollTo({
         top: sectionPosition - navbarHeight - additionalOffset,
         behavior: 'smooth'
@@ -41,13 +38,25 @@
     }
   }
 
-  // Function to toggle projects dropdown
+  function goToAbout() {
+    goto('/');
+    setTimeout(() => {
+      scrollToSection('about');
+    }, 100);
+  }
+  
+  async function goToProjects() {
+    await goto('/');
+    setTimeout(() => {
+      scrollToSection('projects');
+    }, 100);
+  }
+
   function toggleProjectsMenu(event: MouseEvent) {
     event.stopPropagation();
     projectsMenuOpen = !projectsMenuOpen;
   }
   
-  // Close dropdown when clicking outside
   function handleClickOutside(event: MouseEvent) {
     if (projectsMenuOpen && !(event.target as HTMLElement).closest('.projects-dropdown')) {
       projectsMenuOpen = false;
@@ -57,33 +66,28 @@
   onMount(() => {
     visible = true;
     
-    // Set up intersection observer to track which section is in view
     const sections = ['home', 'about', 'experience', 'projects'];
     const sectionElements = sections.map(id => document.getElementById(id));
     
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        // Store the most visible section
         if (entry.isIntersecting && entry.intersectionRatio >= 0.2) {
           activeSection = entry.target.id;
         }
       });
     }, { 
       threshold: [0.2, 0.5, 0.8],
-      rootMargin: '-100px 0px -100px 0px' // Adjust the margins to better control when sections become active
+      rootMargin: '-100px 0px -100px 0px'
     });
     
     sectionElements.forEach(el => {
       if (el) observer.observe(el);
     });
     
-    // Update active section on navigation click to ensure it stays active
     const handleNavClick = (id: string) => {
-      // Set the active section immediately on click
       activeSection = id;
     };
     
-    // Add click listeners to nav items
     document.querySelectorAll('.nav-item').forEach(item => {
       item.addEventListener('click', () => {
         const id = item.getAttribute('data-section');
@@ -91,7 +95,6 @@
       });
     });
     
-    // Add event listener for click outside
     document.addEventListener('click', handleClickOutside);
     
     return () => {
@@ -100,7 +103,6 @@
       });
       document.removeEventListener('click', handleClickOutside);
       
-      // Remove click listeners from nav items
       document.querySelectorAll('.nav-item').forEach(item => {
         item.removeEventListener('click', () => {});
       });
@@ -109,61 +111,79 @@
 </script>
 
 <svelte:head>
-  <!-- DevIcon font for tech stack icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
 </svelte:head>
 
-<!-- Navigation Bar -->
 <nav class="navbar" class:visible>
   <div class="navbar-container">
     <div class="navbar-left">
-      <button class="logo" on:click={() => scrollToSection('home')}>CH</button>
+      {#if $page.url.pathname.includes('/case-studies/') }
+        <button class="back-button" on:click={goToProjects}>
+          <span class="back-arrow">←</span> Back to Projects
+        </button>
+      {:else if $page.url.pathname.includes('/experience/education')}
+        <button class="back-button" on:click={goToAbout}>
+          <span class="back-arrow">←</span> Back to About Me
+        </button>
+      {:else}
+        <button class="logo" on:click={() => scrollToSection('home')}>CH</button>
+      {/if}
     </div>
     
-    <!-- Mobile menu button -->
-    <button class="mobile-menu-toggle" class:open={mobileMenuOpen} on:click={toggleMobileMenu} aria-label="Toggle navigation menu">
-      <span class="bar"></span>
-      <span class="bar"></span>
-      <span class="bar"></span>
-    </button>
+    {#if $page.url.pathname.includes('/case-studies/bookends')}
+      <a 
+        href="https://bookends.app" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        class="nav-app-link">
+        Visit Bookends App →
+      </a>
+    {:else if !$page.url.pathname.includes('/case-studies/') && !$page.url.pathname.includes('/experience/education')}
+      <button class="mobile-menu-toggle" class:open={mobileMenuOpen} on:click={toggleMobileMenu} aria-label="Toggle navigation menu">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </button>
+    {/if}
     
     <div class="navbar-right" class:open={mobileMenuOpen}>
-      <button 
-        class="nav-item" 
-        class:active={activeSection === 'home'}
-        on:click={() => scrollToSection('home')}
-        data-section="home"
-      >
-        Home
-      </button>
-      <button 
-        class="nav-item" 
-        class:active={activeSection === 'about'}
-        on:click={() => scrollToSection('about')}
-        data-section="about"
-      >
-        About
-      </button>
-      <button 
-        class="nav-item" 
-        class:active={activeSection === 'experience'}
-        on:click={() => scrollToSection('experience')}
-        data-section="experience"
-      >
-        Experience
-      </button>
-      
-      <!-- Projects dropdown -->
-      <div class="projects-dropdown">
+      {#if !$page.url.pathname.includes('/case-studies/') && !$page.url.pathname.includes('/experience/education')}
         <button 
           class="nav-item" 
-          class:active={activeSection === 'projects' || $page.url.pathname.includes('/case-studies')}
-          on:click={() => scrollToSection('projects')}
-          data-section="projects"
+          class:active={activeSection === 'home'}
+          on:click={() => scrollToSection('home')}
+          data-section="home"
         >
-          Projects
+          Home
         </button>
-      </div>
+        <button 
+          class="nav-item" 
+          class:active={activeSection === 'about'}
+          on:click={() => scrollToSection('about')}
+          data-section="about"
+        >
+          About
+        </button>
+        <button 
+          class="nav-item" 
+          class:active={activeSection === 'experience'}
+          on:click={() => scrollToSection('experience')}
+          data-section="experience"
+        >
+          Experience
+        </button>
+        
+        <div class="projects-dropdown">
+          <button 
+            class="nav-item" 
+            class:active={activeSection === 'projects' || $page.url.pathname.includes('/case-studies')}
+            on:click={() => scrollToSection('projects')}
+            data-section="projects"
+          >
+            Projects
+          </button>
+        </div>
+      {/if}
     </div>
   </div>
 </nav>
@@ -173,17 +193,15 @@
 </main>
 
 <style>
-  /* Typography Colors */
   :root {
-    --text-primary: rgb(248, 250, 252);    /* Crisp white with slight warmth for confidence */
-    --text-accent: rgb(125, 211, 252);     /* Bright sky blue for impact without aggression */
-    --text-secondary: rgb(186, 230, 253);  /* Lighter blue for supporting text */
-    --text-glow: rgba(125, 211, 252, 0.3); /* Subtle glow for sophistication */
-    --bg-dark: rgb(2, 12, 27);             /* Dark blue background */
-    --bg-dark-transparent: rgba(2, 12, 27, 0.9); /* Dark blue semi-transparent */
+    --text-primary: rgb(248, 250, 252);
+    --text-accent: rgb(125, 211, 252);
+    --text-secondary: rgb(186, 230, 253);
+    --text-glow: rgba(125, 211, 252, 0.3);
+    --bg-dark: rgb(2, 12, 27);
+    --bg-dark-transparent: rgba(2, 12, 27, 0.9);
   }
 
-  /* Navigation Bar Styles */
   .navbar {
     position: fixed;
     top: 0;
@@ -278,7 +296,6 @@
     width: 100%;
   }
   
-  /* Mobile menu styles */
   .mobile-menu-toggle {
     display: none;
     flex-direction: column;
@@ -315,6 +332,13 @@
   @media (max-width: 768px) {
     .navbar-container {
       padding: 0 1rem;
+    }
+    
+    .navbar-left {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
     
     .mobile-menu-toggle {
@@ -363,12 +387,10 @@
 
   main {
     min-height: 100vh;
-    padding-top: 5rem; /* Add padding to account for the fixed navbar */
-    /* Removed background-color to let the body background show through */
+    padding-top: 5rem;
     color: var(--text-primary);
   }
   
-  /* Global styles to ensure consistency */
   :global(body) {
     background-color: var(--bg-color);
     margin: 0;
@@ -378,70 +400,78 @@
     scroll-behavior: smooth;
   }
 
-  /* Projects Dropdown Styles */
   .projects-dropdown {
     position: relative;
     display: inline-block;
   }
-  
-  .dropdown-arrow {
-    font-size: 0.8rem;
-    margin-left: 5px;
-    transition: transform 0.2s ease;
-  }
-  
-  .projects-dropdown .nav-item.active .dropdown-arrow {
-    transform: rotate(180deg);
-  }
-  
-  .dropdown-menu {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    background: rgba(13, 25, 42, 0.95);
-    border: 1px solid rgba(125, 211, 252, 0.15);
-    backdrop-filter: blur(10px);
-    border-radius: 8px;
-    min-width: 200px;
-    z-index: 1000;
-    overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  }
-  
-  .dropdown-item {
-    display: block;
-    width: 100%;
-    padding: 0.75rem 1.25rem;
-    text-align: left;
-    color: var(--text-secondary);
-    text-decoration: none;
-    transition: all 0.2s ease;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-family: inherit;
+
+  .back-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     font-size: 1rem;
-  }
-  
-  .dropdown-item:hover {
-    background: rgba(125, 211, 252, 0.1);
     color: var(--text-accent);
+    background: none;
+    border: none;
+    padding: 0.5rem 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: inherit;
   }
   
-  /* Mobile dropdown adjustments */
+  .back-button:hover {
+    color: var(--text-primary);
+    transform: translateX(-3px);
+  }
+  
+  .back-arrow {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+  }
+  
+  .back-button:hover .back-arrow {
+    transform: translateX(-3px);
+  }
+  
   @media (max-width: 768px) {
-    .dropdown-menu {
-      position: static;
-      width: 100%;
-      border: none;
-      border-top: 1px solid rgba(125, 211, 252, 0.15);
-      border-radius: 0;
-      background: rgba(13, 25, 42, 0.5);
-      box-shadow: none;
+    .back-button {
+      font-size: 0.9rem;
     }
-    
-    .dropdown-item {
-      padding-left: 2rem;
+  }
+
+  .nav-app-link {
+    display: inline-block;
+    background: rgba(26, 188, 156, 0.15);
+    color: var(--text-accent);
+    text-decoration: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 500;
+    border: 1px solid rgba(125, 211, 252, 0.3);
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    margin-left: auto;
+  }
+  
+  .nav-app-link:hover {
+    transform: translateY(-2px);
+    border-color: rgba(125, 211, 252, 0.6);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    background: rgba(26, 188, 156, 0.25);
+    color: var(--text-primary);
+  }
+  
+  @media (max-width: 768px) {
+    .nav-app-link {
+      font-size: 0.9rem;
+      padding: 0.5rem 1rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .nav-app-link {
+      font-size: 0.75rem;
+      padding: 0.3rem 0.7rem;
     }
   }
 </style> 

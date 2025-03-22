@@ -41,8 +41,8 @@
   
   // Format with each key-value pair on a single line
   let fullText = `const socialLinks = {
-  github: "https://github.com/chadjholmes",
-  linkedin: "https://linkedin.com/in/chadjayholmes"
+  github: "github.com/chadjholmes",
+  linkedin: "linkedin.com/in/chadjayholmes"
 };`;
   
   // Typing animation
@@ -101,18 +101,20 @@
     let formatted = text;
     
     if (formatted.includes("github.com")) {
-      const githubUrl = socialLinks.github;
+      const githubUrl = "github.com/chadjholmes";
+      const fullGithubUrl = "https://" + githubUrl;
       formatted = formatted.replace(
         `"${githubUrl}"`, 
-        `<a href="${githubUrl}" target="_blank" rel="noopener noreferrer" class="json-link ${typingComplete ? 'link-complete' : ''}">"${githubUrl}"</a>`
+        `<a href="${fullGithubUrl}" target="_blank" rel="noopener noreferrer" class="json-link ${typingComplete ? 'link-complete' : ''}">"${githubUrl}"</a>`
       );
     }
     
     if (formatted.includes("linkedin.com")) {
-      const linkedinUrl = socialLinks.linkedin;
+      const linkedinUrl = "linkedin.com/in/chadjayholmes";
+      const fullLinkedinUrl = "https://" + linkedinUrl;
       formatted = formatted.replace(
         `"${linkedinUrl}"`, 
-        `<a href="${linkedinUrl}" target="_blank" rel="noopener noreferrer" class="json-link ${typingComplete ? 'link-complete' : ''}">"${linkedinUrl}"</a>`
+        `<a href="${fullLinkedinUrl}" target="_blank" rel="noopener noreferrer" class="json-link ${typingComplete ? 'link-complete' : ''}">"${linkedinUrl}"</a>`
       );
     }
     
@@ -516,6 +518,7 @@
     word-break: break-word;
     margin: 0;
     box-shadow: 0 0 20px var(--text-glow);
+    overflow-wrap: break-word;
   }
   
   .cursor {
@@ -557,12 +560,30 @@
       width: 90%;
     }
     
+    .json-code {
+      font-size: 0.7rem;
+      padding: 0.8rem;
+      line-height: 1.4;
+    }
+    
     .about-me-container {
       margin-bottom: 2rem;
     }
     
     .triple-card-overview {
       padding-top: 3rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .json-code {
+      font-size: 0.7rem;
+      padding: 0.4rem;
+      overflow-x: auto;
+    }
+    
+    .json-link {
+      word-break: break-all;
     }
   }
   

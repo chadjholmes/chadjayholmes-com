@@ -161,6 +161,15 @@
 <svelte:head>
   <!-- DevIcon font for tech stack icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
+  <!-- Add page title -->
+  <title>Chad Holmes | Senior Software Engineer</title>
+  <meta name="description" content="Chad Holmes - Senior Software Engineer specializing in TypeScript, Ruby, and AWS">
+  
+  <!-- Preload critical resources -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+  <link rel="preload" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css" as="style">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 </svelte:head>
 
 <div class="page-container {selectedTech ? 'hide-cursor' : ''}">
@@ -376,6 +385,11 @@
     /* Ticker Controls */
     --ticker-duration: 60s;  /* Increased from 25s to 60s for slower scrolling */
     --ticker-item-gap: 2rem;
+
+    /* Background Colors */
+    --bg-primary: rgb(2, 12, 27);  /* Dark blue base */
+    --bg-dark: rgb(2, 12, 27);     /* Same dark blue for all sections */
+    --bg-secondary: rgb(2, 12, 27); /* Match secondary to the same color */
   }
   
   @keyframes ticker {
@@ -388,9 +402,10 @@
   }
   
   .page-container {
-    min-height: 300vh; /* Keep the increased height */
+    min-height: 300vh;
     position: relative;
-    overflow: visible; /* Keep visible overflow */
+    overflow: visible;
+    background-color: var(--bg-color); /* Consistent background color */
   }
 
   @keyframes blink {
@@ -419,11 +434,225 @@
 
   /* Add responsive breakpoints for fine-tuning */
   @media (max-width: 768px) {
-   
+    .tech-logos-column {
+      display: none !important;
+    }
+
+    .tech-logo-item {
+      display: none !important;
+    }
+
+    .custom-cursor {
+      display: none !important;
+    }
+
+    :global(.hero h1) {
+      font-size: 2.5rem !important;
+      margin-bottom: 1rem !important;
+    }
+    
+    :global(.hero h2) {
+      font-size: 1.8rem !important;
+    }
+    
+    #experience {
+      margin-top: 0 !important;
+      position: relative;
+      z-index: 1;
+      padding-bottom: 20rem !important;
+      background-color: var(--bg-color) !important;
+    }
+    
+    .page-container {
+      display: flex;
+      flex-direction: column;
+      background-color: var(--bg-color) !important;
+    }
+    
+    section {
+      width: 100%;
+      position: relative;
+      background-color: var(--bg-color) !important;
+    }
+    
+    #projects {
+      position: relative;
+      z-index: 2;
+      margin-top: 15rem !important;
+      background-color: var(--bg-color) !important;
+      padding-top: 5rem !important;
+    }
+
+    .projects-section {
+      background-color: var(--bg-color) !important;
+      min-height: auto !important;
+      height: auto !important;
+      padding: 3rem 0 !important;
+    }
+    
+    .section-title {
+      margin-top: 2rem !important;
+      position: relative;
+      z-index: 10;
+    }
+
+    .project-bento {
+      max-height: 800px !important;
+      height: auto !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+      display: block !important;
+      overflow: visible !important;
+      transition: none !important;
+      transform: none !important;
+      position: relative !important;
+      z-index: 6 !important;
+    }
+    
+    .project-item .project-bento {
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      position: relative !important;
+      z-index: 6 !important;
+    }
+    
+    .bento-grid {
+      display: grid !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      max-height: none !important;
+      overflow: visible !important;
+      position: relative !important;
+      z-index: 7 !important;
+    }
+    
+    .bento-cell {
+      opacity: 1 !important;
+      visibility: visible !important;
+      display: block !important;
+      transform: none !important;
+      border-width: 2px !important;
+      position: relative !important;
+      z-index: 8 !important;
+      background-color: rgba(13, 25, 42, 0.9) !important;
+      border-color: rgba(125, 211, 252, 0.3) !important;
+    }
+    
+    .bento-cell:hover {
+      transform: none !important;
+      border-color: rgba(125, 211, 252, 0.5) !important;
+    }
+    
+    .service-grid .bento-cell,
+    .bookends-grid .bento-cell,
+    .highway-grid .bento-cell {
+      background-color: rgba(13, 25, 42, 0.9) !important;
+    }
+    
+    .service-grid .bento-cell:hover,
+    .bookends-grid .bento-cell:hover,
+    .highway-grid .bento-cell:hover {
+      border-color: rgba(125, 211, 252, 0.5) !important;
+    }
+    
+    .project-item:hover .project-bento,
+    .project-item .project-bento {
+      max-height: 800px !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+      overflow: visible !important;
+    }
+
+    .custom-cursor {
+      display: none !important;
+    }
+
+    :global(h3.company-name) {
+      font-size: 1.5rem !important;
+    }
+
+    .tech-logo-item, .project-arrow, button, a {
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    :global(nav) {
+      padding: 0.75rem 1rem !important;
+      background-color: rgba(2, 12, 27, 0.95) !important;
+      backdrop-filter: blur(10px) !important;
+    }
+    
+    .project-item {
+      margin-bottom: 3rem !important;
+      width: 100% !important;
+      position: relative !important;
+      z-index: 5 !important;
+    }
+
+    .bento-cell p, .tech-tags span {
+      color: var(--text-primary) !important;
+      font-weight: 500 !important;
+    }
+
+    section > div {
+      padding: 0 1rem;
+    }
   }
 
   @media (max-width: 480px) {
+    /* Further refinements for smallest screens */
+    .tech-logos-column {
+      gap: 0.5rem;
+    }
+
+    /* Even larger name on smallest screens */
+    :global(.hero h1) {
+      font-size: 2.8rem !important;
+      line-height: 1.2 !important;
+    }
     
+    :global(.hero h2) {
+      font-size: 1.6rem !important;
+    }
+    
+    /* More section separation for smallest screens */
+    #experience {
+      padding-bottom: 25rem !important; /* Even more padding on smallest screens */
+    }
+    
+    #projects {
+      margin-top: 20rem !important; /* Even more margin on smallest screens */
+      padding-top: 7rem !important;
+    }
+
+    /* Additional optimizations for smallest screens */
+    .bento-grid {
+      gap: 1rem !important;
+    }
+
+    /* Prevent text overflow on small screens */
+    h1, h2, h3, h4, h5, p {
+      overflow-wrap: break-word !important;
+      word-wrap: break-word !important;
+      hyphens: auto !important;
+    }
+
+    /* Enhance touch targets further */
+    .tech-tags span {
+      padding: 0.5rem 0.75rem !important;
+      margin-bottom: 0.5rem !important;
+    }
+
+    /* Improve scrolling experience */
+    html, body {
+      scroll-padding-top: 70px !important; /* Adjust for fixed header */
+    }
+
+    /* Make sure hover states don't persist on touch devices */
+    .project-item:hover {
+      transform: none !important;
+    }
   }
 
   /* Add tablet breakpoint for mid-sized devices */
@@ -433,9 +662,9 @@
 
   /* Ensure z-index hierarchy works correctly */
   .page-container {
-    min-height: 300vh; /* Keep the increased height */
+    min-height: 300vh;
     position: relative;
-    overflow: visible; /* Keep visible overflow */
+    overflow: visible;
   }
 
   /* Component z-index ordering */
@@ -452,14 +681,20 @@
   }
 
   /* Section spacing */
+  #home {
+    background-color: var(--bg-color);
+  }
+  
   #about {
     padding-top: 5rem; /* Add padding to the top for better visibility below navbar */
+    background-color: var(--bg-color);
   }
   
   #experience {
     margin-top: 50vh; /* Reduced from 100vh to create reasonable spacing without exaggerating */
     padding-top: 5rem; /* Add padding to the top for better visibility below navbar */
     padding-bottom: 20vh; /* Add padding at the bottom for better spacing */
+    background-color: var(--bg-color);
   }
 
   /* Tech logos column styling */
@@ -638,11 +873,11 @@
 
   /* Projects Section Styles */
   .projects-section {
-    background: linear-gradient(180deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+    background-color: var(--bg-color);
     padding: 6rem 0;
     height: 100vh;
     /* Update text scaling for projects section */
-    font-size: 0.8em; /* Further reduced from 0.85em */
+    font-size: 0.8em;
   }
   
   .section-container {
@@ -764,18 +999,35 @@
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0; /* Start with opacity 0 */
+    visibility: hidden; /* Start hidden */
   }
   
   .project-item:hover .project-bento {
-    max-height: 400px;
+    max-height: 800px; /* Increased from 400px to ensure enough space */
+    opacity: 1; /* Fade in */
+    visibility: visible; /* Make visible */
   }
   
-  /* Base Bento Grid */
+  /* Bento Grid Styles */
   .bento-grid {
     display: grid;
-    gap: 0.75rem;
+    grid-gap: 0.6rem; /* Reduced from 0.7rem */
+    opacity: 0;
+    visibility: hidden;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    will-change: transform, opacity;
     padding: 0 1.5rem 1.5rem;
     height: 100%;
+  }
+  
+  .project-item:hover .bento-grid {
+    opacity: 1;
+    visibility: visible;
+    max-height: 800px;
+    overflow: visible;
   }
   
   /* Service Request Platform Grid */
@@ -806,6 +1058,14 @@
       "metrics metrics tech tech";
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: auto auto auto;
+  }
+  
+  /* Project bento cell background styles override */
+  .main-overview, .metrics, .automation, .tech, 
+  .swift, .social, .analytics, .realtime, .search {
+    background-color: rgba(13, 25, 42, 0.8);
+    border: 1px solid rgba(125, 211, 252, 0.2);
+    transition: all 0.3s ease;
   }
   
   /* Cell Placements */
@@ -1050,6 +1310,75 @@
         "search"
         "metrics"
         "tech";
+    }
+  }
+
+  /* Add landscape mode optimizations */
+  @media (max-height: 480px) and (orientation: landscape) {
+    .tech-logos-column {
+      bottom: 0.5rem;
+      padding: 0.25rem;
+    }
+
+    .tech-logo-item {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+
+    .tech-logo-item i {
+      font-size: 0.8rem;
+    }
+
+    /* Adjust section spacing for landscape */
+    .section {
+      padding: 1.5rem 1rem;
+    }
+    
+    #about, #experience, #projects {
+      padding-top: 2rem;
+      margin-top: 0;
+    }
+    
+    /* Adjust name size for landscape */
+    :global(.hero h1) {
+      font-size: 2.2rem !important;
+    }
+    
+    :global(.hero h2) {
+      font-size: 1.4rem !important;
+    }
+
+    /* Additional landscape optimizations */
+    /* Adjust content to be more horizontally oriented */
+    .projects-vertical {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1rem;
+    }
+
+    /* Make experience cards more compact */
+    :global(.role-highlight) {
+      margin-bottom: 0.5rem !important;
+    }
+
+    /* Reduce vertical padding in all elements */
+    .bento-cell, .project-header {
+      padding: 0.5rem !important;
+    }
+
+    /* Keep content visible without excessive scrolling */
+    .page-container {
+      min-height: auto !important;
+    }
+
+    /* Ensure navbar is minimal */
+    :global(nav) {
+      height: 40px !important;
+    }
+
+    /* Make hero section more compact */
+    :global(.hero) {
+      min-height: 70vh !important;
     }
   }
 </style>
